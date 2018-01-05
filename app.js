@@ -90,7 +90,7 @@ const init = async () => {
   klaw('./commands').on('data', (item) => {
     const cmdFile = path.parse(item.path);
     if (!cmdFile.ext || cmdFile.ext !== '.js') return;
-    const response = client.loadCommand(cmdFile.dir, `${cmdFile.name}${cmdFile.ext}`);
+    const response = client.loadCommand(cmdFile.dir, `${cmdFile.base}`);
     commandList.push(cmdFile.name);
     if (response) client.logger.error(response);
   }).on('end', () => {
@@ -106,7 +106,7 @@ const init = async () => {
       const event = new (require(`${eventFile.dir}${path.sep}${eventFile.name}${eventFile.ext}`))(client);    
       eventList.push(event);      
       client.on(eventName, (...args) => event.execute(...args));
-      delete require.cache[require.resolve(`${eventFile.dir}${path.sep}${eventFile.name}${eventFile.ext}`)];
+      delete require.cache[require.resolve(`${eventFile.dir}${path.sep}${eventFile.base}`)];
     } catch (error) {
       client.logger.error(`Error loading event ${eventFile.name}: ${error}`);
     }
